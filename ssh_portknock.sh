@@ -11,14 +11,12 @@
 # remote ssh port state before connecting.
 # Please edit theses variable at your convenience.
 #
-
 # IP address, hostname or fqdn.
 hostname="host.example.com"     
 # Remote port number to scan.     
 port=22
 # Sequence sent by kockd client.
 sequence="4900:tcp 6566:udp 4030:udp"
-
 # ==============================================================================
 
 
@@ -75,4 +73,3 @@ else
     echo -e "\n[Error]" $port "server port is closed."
     exit 1
 fi
-
