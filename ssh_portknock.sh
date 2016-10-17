@@ -20,16 +20,6 @@ sequence="4900:tcp 6566:udp 4030:udp"
 # ==============================================================================
 
 
-# Installed package checking function.
-function check_package(){
-    if ( ! which $1 > /dev/null 2>&1 ); then
-        echo "Warning: $1 package has not been found in this system."
-        echo "Please install it before using this tool."
-        exit 1
-    fi
-}
-
-
 # Check variables.
 if [ -z "$hostname" ] || [ -z "$sequence" ] || [ -z "$port" ]; then
     echo "You must provide the remote server information."
@@ -39,8 +29,8 @@ fi
 
 
 # Check installed packages.
-check_package knock
-check_package nc
+type -P knock &>/dev/null || { echo "Error: ssh_portknock.sh requires the program knock... Aborting."; echo; exit 10; }
+type -P nc &>/dev/null || { echo "Error: ssh_portknock.sh requires the program nc... Aborting."; echo; exit 10; }
 
 
 # Check remote host availability.
@@ -54,7 +44,7 @@ else
 fi
 
 
-# Send knocking sequence.
+# Send knocking sequence and check port state.
 echo -n "Sending knocking sequence..."
 knock -d 1000 $hostname $sequence
 echo "done."
@@ -70,6 +60,6 @@ if [ $? -eq 0 ]; then
     ssh -p $port $hostname
     exit 0
 else
-    echo -e "\n[Error]" $port "server port is closed."
-    exit 1
+    echo -e "\nError:" $port "server port is closed."
+    exit 2
 fi
