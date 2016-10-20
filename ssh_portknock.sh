@@ -9,14 +9,11 @@
 #
 # This script sends port-hits sequence to knockd deamon and checks 
 # remote ssh port state before connecting.
-# Please edit theses variable at your convenience.
 #
-# IP address, hostname or fqdn.
-hostname="host.example.com"     
-# Remote port number to scan.     
-port=22
-# Sequence sent by kockd client.
-sequence="4900:tcp 6566:udp 4030:udp"
+# Please edit the following variables at your convenience.
+hostname="host.example.com"             # IP address, hostname or fqdn.
+port=22                                 # Remote port number.
+sequence="xxxx:tcp xxxx:udp xxxx:udp"   # Sequence sent by portkock client.
 # ==============================================================================
 
 
@@ -29,8 +26,14 @@ fi
 
 
 # Check installed packages.
-type -P knock &>/dev/null || { echo "Error: ssh_portknock.sh requires the program knock... Aborting."; echo; exit 10; }
-type -P nc &>/dev/null || { echo "Error: ssh_portknock.sh requires the program nc... Aborting."; echo; exit 10; }
+type -P knock &>/dev/null || { 
+    echo "Error: ssh_portknock.sh requires the program knock... Aborting.";
+    exit 10; 
+}
+type -P nc &>/dev/null || { 
+    echo "Error: ssh_portknock.sh requires the program nc... Aborting.";
+    exit 10; 
+}
 
 
 # Check remote host availability.
