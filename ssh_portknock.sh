@@ -20,8 +20,8 @@ sequence="xxxx:tcp xxxx:udp xxxx:udp"   # Sequence sent by portkock client.
 # Check variables.
 if [ -z "$hostname" ] || [ -z "$sequence" ] || [ -z "$port" ]; then
     echo "You must provide the remote server information."
-    echo "Please edit the variables before using this script."
-    exit
+    echo "Please edit the internal variables before using this script."
+    exit 0
 fi
 
 
