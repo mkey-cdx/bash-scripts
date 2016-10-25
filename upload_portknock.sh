@@ -26,7 +26,7 @@ function usage(){
 }
 
 
-# Check Arguments.
+# Check given arguments.
 if [ $# -eq 0 ]; then
     usage
     exit 0
