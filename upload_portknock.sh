@@ -4,8 +4,8 @@
 # Rsync through knockd uploader script.
 #
 # Author: Mickaël Coiraton
-# Version 0.1.0
-# Updated: 20th October 2016
+# Version 0.1.1
+# Updated: 26th October 2016
 # 
 # This script is a wrapper for rsync and knock commands. It lets you upload a file 
 # in your remote home folder through a knockd protected port.
@@ -22,10 +22,21 @@ dest_folder="uploaded"                  # Destination folder (optional).
 function usage(){
     echo -e "Usage:\n$0 [OPTION]... FILE\n"
     echo -e "Options:
-    -d  --dest              send file to the given server
+    -d  --dest              send file to the remote server
     -p  --port              use an alternative SSH port
     -h  --help              show this help\n"
 }
+
+
+function check_package(){
+    type -P $1 &>/dev/null || { 
+        echo "Error: ssh_portknock.sh requires the program $1... Aborting.";
+        exit 10; 
+    }
+}
+
+
+# ------------------------------- Main program  --------------------------------
 
 
 # Check given arguments.
@@ -35,11 +46,13 @@ if [ $# -eq 0 ]; then
 fi
 
 
-# Help argument.
+# Show help if asked.
 for arg in $@; do
     if [ $arg = "--help" ] || [ $arg = "-h" ]; then
-        echo "This tool provides a simple wrapper for rsync file through a knockd protected port."
-        echo -e "Please edit the internal variables to configure the remote host parameters.\n"
+        echo "This tool provides a simple wrapper for rsync file through a" \
+             "knockd protected port."
+        echo -e "Please edit the internal variables to configure the remote" \
+             "host parameters.\n"
         usage
         exit 0
     fi
@@ -61,24 +74,15 @@ done
 # Check variables.
 if [ -z "$hostname" ] || [ -z "$sequence" ] || [ -z "$port" ]; then
     echo "You must provide the remote server information."
-    echo "Use -h for help or edit the internal variables before using this script."
+    echo "Use -h for help or edit the internal variables before using" \
+         "this script."
     exit 0
 fi
 
 
 # Check installed packages.
-type -P knock &>/dev/null || { 
-    echo "Error: ssh_portknock.sh requires the program knock... Aborting.";
-    exit 10; 
-}
-type -P nc &>/dev/null || { 
-    echo "Error: ssh_portknock.sh requires the program nc... Aborting.";
-    exit 10; 
-}
-type -P rsync &>/dev/null || { 
-    echo "Error: ssh_portknock.sh requires the program scp... Aborting.";
-    exit 10; 
-}
+check_package nc
+check_package rsync
 
 
 # Check remote host availability.
