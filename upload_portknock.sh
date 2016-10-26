@@ -20,8 +20,10 @@ dest_folder="uploaded"                  # Destination folder (optional).
 
 
 function usage(){
-    echo -e "Usage:\n$0 FILE\n"
+    echo -e "Usage:\n$0 [OPTION]... FILE\n"
     echo -e "Options:
+    -d  --dest              send file to the given server
+    -p  --port              use an alternative SSH port
     -h  --help              show this help\n"
 }
 
@@ -36,7 +38,7 @@ fi
 # Help argument.
 for arg in $@; do
     if [ $arg = "--help" ] || [ $arg = "-h" ]; then
-        echo "This tool provides a simple wrapper for rsync through a knockd protected port."
+        echo "This tool provides a simple wrapper for rsync file through a knockd protected port."
         echo -e "Please edit the internal variables to configure the remote host parameters.\n"
         usage
         exit 0
@@ -44,10 +46,22 @@ for arg in $@; do
 done
 
 
+# Rewite variables if provided.
+for (( i = 1; i <= $#; i++ )); do
+    arg=${@:$i:1}
+    if [ $arg = "-d" ] || [ $arg = "--dest" ]; then
+        hostname=${@:$i+1:1}
+    fi
+    if [ $arg = "-p" ] || [ $arg = "--port" ]; then
+        port=${@:$i+1:1}
+    fi
+done
+
+
 # Check variables.
 if [ -z "$hostname" ] || [ -z "$sequence" ] || [ -z "$port" ]; then
     echo "You must provide the remote server information."
-    echo "Please edit the internal variables before using this script."
+    echo "Use -h for help or edit the internal variables before using this script."
     exit 0
 fi
 
@@ -91,7 +105,7 @@ nc -z -w 2 $hostname $port
 if [ $? -eq 0 ]; then
     echo "server port is open."
     echo -e "Sending file...\n"
-    rsync -avzh -e "ssh -p $port" $1 $USER@$hostname:~/$dest_folder
+    rsync -avzh -e "ssh -p $port" $1 $USER@$hostname:$dest_folder
     exit 0
 else
     echo -e "\nError:" $port "server port is closed."
