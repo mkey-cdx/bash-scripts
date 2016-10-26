@@ -3,9 +3,9 @@
 # ============================================================================== 
 # SSH knockd connection script.
 #
-# Author: Mickaël Coiraton
-# Version 0.1.5
-# Updated: 14nd October 2016
+# Maintainer: Mickaël Coiraton
+# Version 0.1.6
+# Updated: 26th October 2016
 #
 # This script sends port-hits sequence to knockd deamon and checks 
 # remote ssh port state before connecting.
@@ -17,6 +17,50 @@ sequence="xxxx:tcp xxxx:udp xxxx:udp"   # Sequence sent by portkock client.
 # ==============================================================================
 
 
+function usage(){
+    echo -e "Usage:\n$0 [OPTION]...\n"
+    echo -e "Options:
+    -d  --dest              connect to the remote server
+    -p  --port              use an alternative SSH port
+    -h  --help              show this help\n"
+}
+
+
+function check_package(){
+    type -P $1 &>/dev/null || { 
+        echo "Error: ssh_portknock.sh requires the program $1... Aborting.";
+        exit 10; 
+    }
+}
+
+
+# ------------------------------- Main program  --------------------------------
+
+
+# Show help if asked.
+for arg in $@; do
+    if [ $arg = "--help" ] || [ $arg = "-h" ]; then
+        echo "This tool lets you connect through a knockd protected SSH port."
+        echo -e "Please edit the internal variables to configure the remote" \
+                "host parameters.\n"
+        usage
+        exit 0
+    fi
+done
+
+
+# Rewite variables if provided.
+for (( i = 1; i <= $#; i++ )); do
+    arg=${@:$i:1}
+    if [ $arg = "-d" ] || [ $arg = "--dest" ]; then
+        hostname=${@:$i+1:1}
+    fi
+    if [ $arg = "-p" ] || [ $arg = "--port" ]; then
+        port=${@:$i+1:1}
+    fi
+done
+
+
 # Check variables.
 if [ -z "$hostname" ] || [ -z "$sequence" ] || [ -z "$port" ]; then
     echo "You must provide the remote server information."
@@ -26,14 +70,8 @@ fi
 
 
 # Check installed packages.
-type -P knock &>/dev/null || { 
-    echo "Error: ssh_portknock.sh requires the program knock... Aborting.";
-    exit 10; 
-}
-type -P nc &>/dev/null || { 
-    echo "Error: ssh_portknock.sh requires the program nc... Aborting.";
-    exit 10; 
-}
+check_package knock
+check_package nc
 
 
 # Check remote host availability.
