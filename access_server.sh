@@ -19,7 +19,7 @@ close_sequence="xxxx:tcp xxxx:tcp xxxx:tcp"     # Close sequence sent to knockd.
 
 
 function usage(){
-    echo -e "Usage:\n$0 [OPTION]... open|close\n"
+    echo -e "Usage:\n$0 open|close [OPTION]...\n"
     echo -e "Options:
     -d  --dest              connect to the remote server
     -p  --port              use an alternative SSH port
