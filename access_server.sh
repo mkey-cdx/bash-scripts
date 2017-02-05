@@ -4,8 +4,8 @@
 # Knockd connexion script
 #
 # Maintainer: Mickaël Coiraton
-# Version 0.1.0
-# Updated: 27 March 2016
+# Version 0.1.1
+# Updated: 5 February 2017
 #
 # This script sends port-hits sequence and checks remote ssh port state.
 # This sequence is used to open or close target port through knockd daemon.
@@ -37,7 +37,7 @@ function check_package(){
 
 function check_host(){
     echo -n "Checking remote host availability..."
-    ping -c 1 $hostname > /dev/null 2>&1
+    ping -4 -c 1 $hostname > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo -e "\nRemote host is unreachable: $hostname"
         return 1
