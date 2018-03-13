@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# ==============================================================================
+# Motd update script
+#
+# Maintainer: Mickaël Coiraton
+# Version 1.2
+# Updated: 13 March 2018
+#
+# Provides various system information on login.
+# Place this file in /etc/update-motd.d/
+#
+# ==============================================================================
+
+. /etc/os-release
+publicname='example.com'
+os=$NAME
+uptime=$(uptime -p)
+ip4=$(ip a show up | grep 'scope global' | grep 'inet ' | grep -v 'docker' | awk '{print $2}' | cut -f1  -d'/')
+ip6=$(ip a show up | grep 'scope global' | grep 'inet6' | grep -v 'docker' | awk '{print $2}' | cut -f1  -d'/')
+load=$(cat /proc/loadavg | awk -F' ' '{print $1" "$2" "$3 }')
+memreal=$(free -m | head -n 2 | tail -n 1 | cut -d ':' -f 2 | awk {'print int($2/$1*100)'})
+memcache=$(free -m | head -n 2 | tail -n 1 | cut -d ':' -f 2 | awk {'print int($5/$1*100)'})
+if free | awk '/^Swap:/ {exit !$2}'; then
+    memswap=$(free -m | tail -n 1 | cut -d ':' -f 2 | awk {'print int($4/$3*100)'})
+fi
+disk=$(df -h / | awk '{ a = $5 } END { print a }')
+
+echo
+echo "[-------------------------------------------------------------------]"
+echo "   $publicname - Welcome to your $os system."
+echo "     - Hostname                      = `hostname`"
+echo "     - Kernel Version                = `uname -r`"
+echo "     - IPv4 Address                  = `echo $ip4`"
+echo "     - IPv6 Address                  = `echo $ip6`"
+echo "     - System Uptime                 = `echo $uptime`"
+echo "     - Load Averages                 = `echo $load`"
+echo "     - Memory Used (real/cache/swap) = `echo $memreal`% `echo $memcache`% `echo $memswap`%"
+echo "     - Disk Space Used               = `echo $disk`"
+echo "[-------------------------------------------------------------------]"
+echo
